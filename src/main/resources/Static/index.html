@@ -1,0 +1,44 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hospital Management Dashboard</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header class="navbar">
+    <div class="logo">Hospital Management System</div>
+    <nav>
+        <a href="index.html" class="active">Dashboard</a>
+        <a href="patients.html">Patients</a>
+        <a href="doctors.html">Doctors</a>
+        <a href="appointments.html">Appointments</a>
+    </nav>
+</header>
+
+<main class="container">
+    <h1>Welcome, Admin/Staff</h1>
+    <div class="dashboard-grid">
+        <div class="card patient-stats">
+            <h2>Total Patients</h2>
+            <p id="total-patients">Loading...</p>
+            <a href="patients.html">View Patients</a>
+        </div>
+        <div class="card doctor-stats">
+            <h2>Total Doctors</h2>
+            <p id="total-doctors">Loading...</p>
+            <a href="doctors.html">View Doctors</a>
+        </div>
+        <div class="card appointment-stats">
+            <h2>Appointments Today</h2>
+            <p id="appointments-today">Loading...</p>
+            <a href="appointments.html">View Schedule</a>
+        </div>
+    </div>
+</main>
+
+</body>
+</html>

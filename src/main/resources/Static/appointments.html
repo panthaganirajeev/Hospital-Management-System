@@ -1,0 +1,49 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Appointment Management</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header class="navbar">
+    <div class="logo">Hospital Management System</div>
+    <nav>
+        <a href="index.html">Dashboard</a>
+        <a href="patients.html">Patients</a>
+        <a href="doctors.html">Doctors</a>
+        <a href="appointments.html" class="active">Appointments</a>
+    </nav>
+</header>
+
+<main class="container">
+    <div class="header-with-button">
+        <h1>Appointment Schedule</h1>
+        <button class="add-button" id="open-appointment-form">Book New Appointment</button>
+    </div>
+
+    <input type="text" id="appointment-search" placeholder="Search by Doctor, Patient, or Date..." class="search-input">
+
+    <table id="appointments-table" class="data-table">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Date</th>
+            <th>Time</th>
+            <th>Patient</th>
+            <th>Doctor</th>
+            <th>Reason</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr><td colspan="7">Loading appointment schedule...</td></tr>
+        </tbody>
+    </table>
+</main>
+<script src="js/appointments.js"></script>
+</body>
+</html>

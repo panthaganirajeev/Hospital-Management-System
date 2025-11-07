@@ -1,0 +1,47 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doctor Management</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header class="navbar">
+    <div class="logo">Hospital Management System</div>
+    <nav>
+        <a href="index.html">Dashboard</a>
+        <a href="patients.html">Patients</a>
+        <a href="doctors.html" class="active">Doctors</a>
+        <a href="appointments.html">Appointments</a>
+    </nav>
+</header>
+
+<main class="container">
+    <div class="header-with-button">
+        <h1>Doctor Records</h1>
+        <button class="add-button">Add New Doctor</button>
+    </div>
+
+    <input type="text" id="doctor-search" placeholder="Search by Name or Specialization..." class="search-input">
+
+    <table id="doctors-table" class="data-table">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Specialization</th>
+            <th>Contact</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr><td colspan="5">Loading doctor data...</td></tr>
+        </tbody>
+    </table>
+</main>
+<script src="js/doctors.js"></script>
+</body>
+</html>

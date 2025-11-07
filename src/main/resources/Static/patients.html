@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Patient Management</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header class="navbar">
+    <div class="logo">Hospital Management System</div>
+    <nav>
+        <a href="index.html">Dashboard</a>
+        <a href="patients.html" class="active">Patients</a>
+        <a href="doctors.html">Doctors</a>
+        <a href="appointments.html">Appointments</a>
+    </nav>
+</header>
+
+<main class="container">
+    <div class="header-with-button">
+        <h1>Patient Records</h1>
+        <button id="addPatientBtn" class="add-button">Add New Patient</button>
+    </div>
+
+    <input type="text" id="patient-search" placeholder="Search by Name or ID..." class="search-input">
+
+    <table id="patients-table" class="data-table">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>DOB</th>
+            <th>Contact</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr><td colspan="5">Loading patient data...</td></tr>
+        </tbody>
+    </table>
+</main>
+
+<!-- Modal form for adding a new patient -->
+<div id="patientFormModal" class="modal" style="display:none;">
+    <div class="modal-content">
+        <h2>Add Patient</h2>
+        <form id="patientForm">
+            <label for="name">Name:</label>
+            <input type="text" id="name" required><br>
+
+            <label for="dob">Date of Birth:</label>
+            <input type="date" id="dob" required><br>
+
+            <label for="contact">Contact:</label>
+            <input type="text" id="contact" required><br>
+
+            <button type="submit">Save</button>
+            <button type="button" id="closeFormBtn">Cancel</button>
+        </form>
+    </div>
+</div>
+
+<script src="js/patients.js"></script>
+</body>
+</html>
