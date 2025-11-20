@@ -45,8 +45,9 @@
 <!-- Modal form for adding a new patient -->
 <div id="patientFormModal" class="modal" style="display:none;">
     <div class="modal-content">
-        <h2>Add Patient</h2>
+        <h2 id="patientModalTitle">Add Patient</h2>
         <form id="patientForm">
+            <input type="hidden" id="patientId">
             <label for="name">Name:</label>
             <input type="text" id="name" required><br>
 

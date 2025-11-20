@@ -1,4 +1,4 @@
-// ================== CONFIG ==================
+// ================== API CONFIG ==================
 const appointmentApi = "http://localhost:8090/api/appointments";
 const patientApi = "http://localhost:8090/api/patients";
 const doctorApi = "http://localhost:8090/api/doctors";
@@ -27,7 +27,10 @@ async function loadAppointments() {
                     <td>${a.patient?.name || "N/A"}</td>
                     <td>${a.doctor?.name || "N/A"}</td>
                     <td>${a.reason}</td>
-                    <td><button onclick="deleteAppointment(${a.id})">Delete</button></td>
+                    <td>
+                        <button onclick="editAppointment(${a.id})">Edit</button>
+                        <button onclick="deleteAppointment(${a.id})">Delete</button>
+                    </td>
                 </tr>
             `;
         });
@@ -40,15 +43,17 @@ async function loadAppointments() {
 
 
 // ================== LOAD PATIENT & DOCTOR DROPDOWNS ==================
-async function loadDropdowns() {
+async function loadDropdowns(selectedPatient = "", selectedDoctor = "") {
+
     // Load Patients
     const patientRes = await fetch(patientApi);
     const patients = await patientRes.json();
 
     const patientSelect = document.getElementById("patientId");
     patientSelect.innerHTML = `<option value="">Select Patient</option>`;
+
     patients.forEach(p => {
-        patientSelect.innerHTML += `<option value="${p.id}">${p.name}</option>`;
+        patientSelect.innerHTML += `<option value="${p.id}" ${p.id == selectedPatient ? "selected" : ""}>${p.name}</option>`;
     });
 
     // Load Doctors
@@ -57,8 +62,9 @@ async function loadDropdowns() {
 
     const doctorSelect = document.getElementById("doctorId");
     doctorSelect.innerHTML = `<option value="">Select Doctor</option>`;
+
     doctors.forEach(d => {
-        doctorSelect.innerHTML += `<option value="${d.id}">${d.name}</option>`;
+        doctorSelect.innerHTML += `<option value="${d.id}" ${d.id == selectedDoctor ? "selected" : ""}>${d.name}</option>`;
     });
 }
 
@@ -66,10 +72,16 @@ async function loadDropdowns() {
 
 // ================== SHOW/HIDE MODAL ==================
 const appointmentModal = document.getElementById("appointmentModal");
+const appointmentTitle = document.getElementById("appointmentModalTitle");
 
 document.getElementById("open-appointment-form").addEventListener("click", () => {
     appointmentModal.style.display = "block";
-    loadDropdowns(); // load doctor & patient lists
+    appointmentTitle.innerText = "Book Appointment";
+
+    document.getElementById("appointmentId").value = ""; // reset
+    document.getElementById("appointmentForm").reset();
+
+    loadDropdowns(); // fresh dropdowns
 });
 
 document.getElementById("closeAppointmentBtn").addEventListener("click", () => {
@@ -78,10 +90,31 @@ document.getElementById("closeAppointmentBtn").addEventListener("click", () => {
 
 
 
-// ================== SAVE APPOINTMENT ==================
+// ================== EDIT APPOINTMENT ==================
+async function editAppointment(id) {
+    appointmentModal.style.display = "block";
+    appointmentTitle.innerText = "Edit Appointment";
+
+    const res = await fetch(`${appointmentApi}/${id}`);
+    const a = await res.json();
+
+    document.getElementById("appointmentId").value = id;
+
+    // convert backend date (yyyy-MM-dd) for input type="date"
+    document.getElementById("appointmentDate").value = a.appointmentDate;
+
+    document.getElementById("reason").value = a.reason;
+
+    await loadDropdowns(a.patient.id, a.doctor.id);
+}
+
+
+
+// ================== SAVE APPOINTMENT (ADD + EDIT) ==================
 document.getElementById("appointmentForm").addEventListener("submit", async (e) => {
     e.preventDefault();
 
+    const id = document.getElementById("appointmentId").value;
     const patientId = document.getElementById("patientId").value;
     const doctorId = document.getElementById("doctorId").value;
     const date = document.getElementById("appointmentDate").value;
@@ -92,30 +125,36 @@ document.getElementById("appointmentForm").addEventListener("submit", async (e) 
         return;
     }
 
-    // Convert Date to MM/dd/yyyy format (because your controller expects it)
-    const dateObj = new Date(date);
-    const formattedDate = (dateObj.getMonth() + 1).toString().padStart(2, '0') + "/" +
-                          dateObj.getDate().toString().padStart(2, '0') + "/" +
-                          dateObj.getFullYear();
+    // Convert yyyy-MM-dd to MM/dd/yyyy for controller
+    const d = new Date(date);
+    const formattedDate =
+        (d.getMonth() + 1).toString().padStart(2, "0") + "/" +
+        d.getDate().toString().padStart(2, "0") + "/" +
+        d.getFullYear();
 
+    let url = `${appointmentApi}?patientId=${patientId}&doctorId=${doctorId}&appointmentDate=${formattedDate}&reason=${reason}`;
+    let method = "POST";
+
+    if (id) {
+        // EDIT MODE → PUT URL
+        url = `${appointmentApi}/${id}?patientId=${patientId}&doctorId=${doctorId}&appointmentDate=${formattedDate}&reason=${reason}`;
+        method = "PUT";
+    }
 
     try {
-        const response = await fetch(`${appointmentApi}?patientId=${patientId}&doctorId=${doctorId}&appointmentDate=${formattedDate}&reason=${reason}`, {
-            method: "POST"
-        });
+        const response = await fetch(url, { method: method });
 
         if (response.ok) {
-            alert("Appointment booked successfully!");
+            alert(id ? "Appointment updated!" : "Appointment booked!");
             appointmentModal.style.display = "none";
-            document.getElementById("appointmentForm").reset();
             loadAppointments();
         } else {
-            alert("Failed to book appointment.");
+            alert("Error saving appointment");
         }
 
     } catch (error) {
-        alert("Error connecting to backend!");
-        console.log(error);
+        console.log("Error:", error);
+        alert("Connection Error");
     }
 });
 
@@ -123,7 +162,7 @@ document.getElementById("appointmentForm").addEventListener("submit", async (e) 
 
 // ================== DELETE APPOINTMENT ==================
 async function deleteAppointment(id) {
-    if (confirm("Are you sure you want to delete this appointment?")) {
+    if (confirm("Delete this appointment?")) {
         await fetch(`${appointmentApi}/${id}`, { method: "DELETE" });
         loadAppointments();
     }
@@ -131,5 +170,5 @@ async function deleteAppointment(id) {
 
 
 
-// Load appointments on page load
+// ================== INITIAL LOAD ==================
 window.onload = loadAppointments;

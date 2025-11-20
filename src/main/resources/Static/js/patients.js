@@ -22,7 +22,10 @@ async function loadPatients() {
                     <td>${p.name}</td>
                     <td>${p.dob}</td>
                     <td>${p.contact}</td>
-                    <td><button onclick="deletePatient(${p.id})">Delete</button></td>
+                    <td>
+                        <button onclick="editPatient(${p.id})">Edit</button>
+                        <button onclick="deletePatient(${p.id})">Delete</button>
+                    </td>
                 </tr>
             `;
         });
@@ -33,19 +36,46 @@ async function loadPatients() {
 }
 
 
+
 // ================== MODAL OPEN/CLOSE ==================
 const modal = document.getElementById("patientFormModal");
+const modalTitle = document.getElementById("patientModalTitle");
+
 document.getElementById("addPatientBtn").addEventListener("click", () => {
     modal.style.display = "block";
+    modalTitle.innerText = "Add Patient";
+    document.getElementById("patientId").value = ""; // clear edit ID
+    document.getElementById("patientForm").reset();
 });
+
 document.getElementById("closeFormBtn").addEventListener("click", () => {
     modal.style.display = "none";
 });
 
 
-// ================== SAVE PATIENT WITH VALIDATION ==================
+
+// ================== EDIT PATIENT ==================
+async function editPatient(id) {
+    modal.style.display = "block";
+    modalTitle.innerText = "Edit Patient";
+
+    const res = await fetch(`${apiUrl}/${id}`);
+    const patient = await res.json();
+
+    // Fill form fields
+    document.getElementById("patientId").value = id;
+    document.getElementById("name").value = patient.name;
+    document.getElementById("dob").value = patient.dob;
+    document.getElementById("contact").value = patient.contact;
+}
+
+
+
+// ================== SAVE PATIENT (ADD + EDIT) ==================
 document.getElementById("patientForm").addEventListener("submit", async (e) => {
     e.preventDefault();
+
+    const id = document.getElementById("patientId").value; // blank = add, value = edit
 
     const name = document.getElementById("name").value.trim();
     const dob = document.getElementById("dob").value;
@@ -69,22 +99,31 @@ document.getElementById("patientForm").addEventListener("submit", async (e) => {
         return;
     }
 
-    const newPatient = { name, dob, contact };
+    const patientData = { name, dob, contact };
+
+    let url = apiUrl;
+    let method = "POST";
+
+    if (id) {
+        // Editing mode
+        url = `${apiUrl}/${id}`;
+        method = "PUT";
+    }
 
     try {
-        const response = await fetch(apiUrl, {
-            method: "POST",
+        const response = await fetch(url, {
+            method: method,
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(newPatient)
+            body: JSON.stringify(patientData)
         });
 
         if (response.ok) {
-            alert("Patient added successfully!");
+            alert(id ? "Patient updated successfully!" : "Patient added successfully!");
             modal.style.display = "none";
             document.getElementById("patientForm").reset();
             loadPatients();
         } else {
-            alert("Failed to add patient!");
+            alert("Failed to save patient!");
         }
 
     } catch (error) {
@@ -94,6 +133,7 @@ document.getElementById("patientForm").addEventListener("submit", async (e) => {
 });
 
 
+
 // ================== DELETE PATIENT ==================
 async function deletePatient(id) {
     if (confirm("Are you sure you want to delete this patient?")) {
@@ -101,6 +141,7 @@ async function deletePatient(id) {
         loadPatients();
     }
 }
+
 
 
 // Load data on page load

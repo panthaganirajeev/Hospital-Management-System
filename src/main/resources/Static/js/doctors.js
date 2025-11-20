@@ -1,11 +1,11 @@
 // ================== CONFIG ==================
-const doctorApiUrl = "http://localhost:8090/api/doctors";
+const doctorApi = "http://localhost:8090/api/doctors";
 
 
 // ================== LOAD DOCTORS ==================
 async function loadDoctors() {
     try {
-        const res = await fetch(doctorApiUrl);
+        const res = await fetch(doctorApi);
         const doctors = await res.json();
 
         const tbody = document.querySelector("#doctors-table tbody");
@@ -24,6 +24,7 @@ async function loadDoctors() {
                     <td>${doc.specialization}</td>
                     <td>${doc.contact}</td>
                     <td>
+                        <button onclick="editDoctor(${doc.id})">Edit</button>
                         <button onclick="deleteDoctor(${doc.id})">Delete</button>
                     </td>
                 </tr>
@@ -32,18 +33,21 @@ async function loadDoctors() {
 
     } catch (error) {
         console.log("Error loading doctors:", error);
-        document.querySelector("#doctors-table tbody").innerHTML =
-            `<tr><td colspan="5">Error connecting to Backend.</td></tr>`;
     }
 }
 
 
 
-// ================== SHOW/HIDE DOCTOR MODAL ==================
+// ================== SHOW/HIDE MODAL ==================
 const doctorModal = document.getElementById("doctorFormModal");
+const doctorTitle = document.getElementById("doctorModalTitle");
 
 document.getElementById("addDoctorBtn").addEventListener("click", () => {
     doctorModal.style.display = "block";
+    doctorTitle.innerText = "Add Doctor";
+
+    document.getElementById("doctorId").value = "";
+    document.getElementById("doctorForm").reset();
 });
 
 document.getElementById("closeDoctorFormBtn").addEventListener("click", () => {
@@ -51,63 +55,54 @@ document.getElementById("closeDoctorFormBtn").addEventListener("click", () => {
 });
 
 
-// ================== SAVE DOCTOR WITH VALIDATION ==================
+
+// ================== EDIT DOCTOR ==================
+async function editDoctor(id) {
+    doctorModal.style.display = "block";
+    doctorTitle.innerText = "Edit Doctor";
+
+    const res = await fetch(`${doctorApi}/${id}`);
+    const d = await res.json();
+
+    document.getElementById("doctorId").value = d.id;
+    document.getElementById("doctorName").value = d.name;
+    document.getElementById("doctorSpecialization").value = d.specialization;
+    document.getElementById("doctorContact").value = d.contact;
+}
+
+
+
+// ================== SAVE DOCTOR ==================
 document.getElementById("doctorForm").addEventListener("submit", async (e) => {
     e.preventDefault();
 
-    const name = document.getElementById("doctorName").value.trim();
-    const specialization = document.getElementById("specialization").value.trim();
-    const contact = document.getElementById("doctorContact").value.trim();
+    const id = document.getElementById("doctorId").value;
 
-    // --- VALIDATION ---
+    const doctorData = {
+        name: document.getElementById("doctorName").value,
+        specialization: document.getElementById("doctorSpecialization").value,
+        contact: document.getElementById("doctorContact").value
+    };
 
-    // Name: letters only
-    const nameRegex = /^[A-Za-z ]+$/;
-    if (!nameRegex.test(name)) {
-        alert("Doctor name must contain letters only.");
-        return;
+    let url = doctorApi;
+    let method = "POST";
+
+    if (id) {
+        url = `${doctorApi}/${id}`;
+        method = "PUT";
     }
 
-    // Specialization: letters only
-    const specRegex = /^[A-Za-z ]+$/;
-    if (!specRegex.test(specialization)) {
-        alert("Specialization must contain letters only.");
-        return;
-    }
+    const response = await fetch(url, {
+        method: method,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(doctorData)
+    });
 
-    // Contact: digits only
-    const contactRegex = /^[0-9]+$/;
-    if (!contactRegex.test(contact)) {
-        alert("Contact must contain digits only.");
-        return;
-    }
+    if (response.ok) {
+        alert(id ? "Doctor updated!" : "Doctor added!");
 
-    if (contact.length < 10) {
-        alert("Contact must be at least 10 digits.");
-        return;
-    }
-
-    const newDoctor = { name, specialization, contact };
-
-    try {
-        const response = await fetch(doctorApiUrl, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(newDoctor)
-        });
-
-        if (response.ok) {
-            alert("Doctor added successfully!");
-            doctorModal.style.display = "none";
-            document.getElementById("doctorForm").reset();
-            loadDoctors();
-        } else {
-            alert("Failed to add doctor!");
-        }
-
-    } catch (error) {
-        console.log("Error:", error);
-        alert("Error connecting to backend!");
+        doctorModal.style.display = "none";
+        loadDoctors();
     }
 });
 
@@ -115,13 +110,13 @@ document.getElementById("doctorForm").addEventListener("submit", async (e) => {
 
 // ================== DELETE DOCTOR ==================
 async function deleteDoctor(id) {
-    if (confirm("Are you sure you want to delete this doctor?")) {
-        await fetch(`${doctorApiUrl}/${id}`, { method: "DELETE" });
+    if (confirm("Delete this doctor?")) {
+        await fetch(`${doctorApi}/${id}`, { method: "DELETE" });
         loadDoctors();
     }
 }
 
 
 
-// Load Doctors on page load
+// Load doctors on page load
 window.onload = loadDoctors;

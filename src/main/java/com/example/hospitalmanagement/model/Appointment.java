@@ -3,7 +3,6 @@ package com.example.hospitalmanagement.model;
 
 
 import jakarta.persistence.*;
-import lombok.Data;
 import java.time.LocalDate;
 
 

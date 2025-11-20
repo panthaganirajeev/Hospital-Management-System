@@ -64,4 +64,9 @@ public class AppointmentController {
         appointmentRepository.deleteById(id);
         return "Appointment deleted successfully!";
     }
+    @GetMapping("/count")
+    public long getAppointmentCount() {
+        return appointmentRepository.count();
+    }
+
 }

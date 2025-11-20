@@ -41,4 +41,9 @@ public class PatientController {
         patientRepository.deleteById(id);
         return "Patient deleted successfully!";
     }
+    @GetMapping("/count")
+    public long getPatientCount() {
+        return patientRepository.count();
+    }
+
 }

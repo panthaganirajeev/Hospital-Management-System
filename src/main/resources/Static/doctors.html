@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Doctor Management</title>
+
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -21,8 +22,6 @@
 <main class="container">
     <div class="header-with-button">
         <h1>Doctor Records</h1>
-
-        <!-- ❗ FIXED — Added ID -->
         <button id="addDoctorBtn" class="add-button">Add New Doctor</button>
     </div>
 
@@ -46,18 +45,20 @@
 
 
 <!-- ================================
-     DOCTOR MODAL (Add Doctor Form)
-     ================================ -->
+     DOCTOR MODAL (Add/Edit Doctor)
+================================ -->
 <div id="doctorFormModal" class="modal" style="display:none;">
     <div class="modal-content">
-        <h2>Add Doctor</h2>
+        <h2 id="doctorModalTitle">Add Doctor</h2>
 
         <form id="doctorForm">
+            <input type="hidden" id="doctorId">
+
             <label>Name:</label>
             <input type="text" id="doctorName" required><br>
 
             <label>Specialization:</label>
-            <input type="text" id="specialization" required><br>
+            <input type="text" id="doctorSpecialization" required><br>
 
             <label>Contact:</label>
             <input type="text" id="doctorContact" required><br>
@@ -65,6 +66,7 @@
             <button type="submit" class="add-button">Save</button>
             <button type="button" id="closeDoctorFormBtn" class="cancel-button">Cancel</button>
         </form>
+
     </div>
 </div>
 

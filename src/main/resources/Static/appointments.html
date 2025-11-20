@@ -21,6 +21,7 @@
 <main class="container">
     <div class="header-with-button">
         <h1>Appointment Schedule</h1>
+
         <button class="add-button" id="open-appointment-form">Book New Appointment</button>
     </div>
 
@@ -49,10 +50,15 @@
      APPOINTMENT MODAL (Correct)
 ============================= -->
 <div id="appointmentModal" class="modal" style="display:none;">
-    <div class="modal-content">
-        <h2>Book Appointment</h2>
+<!--    <div class="modal-content">-->
+        <div class="modal-content">
+            <h2 id="appointmentModalTitle">Book Appointment</h2>
+
+            <h2>Book Appointment</h2>
 
         <form id="appointmentForm">
+
+            <input type="hidden" id="appointmentId">
 
             <label>Patient:</label>
             <select id="patientId" required></select><br>

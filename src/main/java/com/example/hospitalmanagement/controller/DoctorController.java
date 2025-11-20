@@ -47,4 +47,9 @@ public class DoctorController {
         doctorRepository.deleteById(id);
         return "Doctor deleted successfully!";
     }
+    @GetMapping("/count")
+    public long getDoctorCount() {
+        return doctorRepository.count();
+    }
+
 }

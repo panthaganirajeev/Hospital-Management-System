@@ -24,7 +24,7 @@
     <div class="dashboard-grid">
         <div class="card patient-stats">
             <h2>Total Patients</h2>
-            <h4>Find patients</h4>
+<!--            <h4>Find patients</h4>-->
 <!--            image setup-->
             <p id="total-patients"></p>
             <a href="patients.html">View Patients</a>
@@ -41,6 +41,32 @@
         </div>
     </div>
 </main>
+
+<script>
+    async function loadDashboardData() {
+        try {
+            // Fetch patient count
+            const p = await fetch("http://localhost:8090/api/patients/count");
+            const patientCount = await p.text();
+            document.getElementById("total-patients").innerText = patientCount;
+
+            // Fetch doctor count
+            const d = await fetch("http://localhost:8090/api/doctors/count");
+            const doctorCount = await d.text();
+            document.getElementById("total-doctors").innerText = doctorCount;
+
+            // Fetch appointment count
+            const a = await fetch("http://localhost:8090/api/appointments/count");
+            const apptCount = await a.text();
+            document.getElementById("appointments-today").innerText = apptCount;
+
+        } catch (err) {
+            console.log("Error loading dashboard stats:", err);
+        }
+    }
+
+    window.onload = loadDashboardData;
+</script>
 
 </body>
 </html>
