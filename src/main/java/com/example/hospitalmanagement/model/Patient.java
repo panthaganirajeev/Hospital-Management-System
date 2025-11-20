@@ -13,13 +13,14 @@ public class Patient {
     private Long id;
 
     private String name;
-    private String dob;       // Matches "DOB" in HTML (can be stored as String or LocalDate)
-    private String contact;   // Matches "Contact" column
-    private String disease;   // Optional - you can keep this for internal record
+    private String dob;
+    private String contact;
+    private String disease;
 
-    public Patient() {
-    }
+    // ⭐ VERY IMPORTANT — no-arg constructor
+    public Patient() {}
 
+    // Optional: full-arg constructor
     public Patient(Long id, String name, String dob, String contact, String disease) {
         this.id = id;
         this.name = name;
@@ -32,7 +33,6 @@ public class Patient {
     public Long getId() {
         return id;
     }
-
     public void setId(Long id) {
         this.id = id;
     }
@@ -40,7 +40,6 @@ public class Patient {
     public String getName() {
         return name;
     }
-
     public void setName(String name) {
         this.name = name;
     }
@@ -48,7 +47,6 @@ public class Patient {
     public String getDob() {
         return dob;
     }
-
     public void setDob(String dob) {
         this.dob = dob;
     }
@@ -56,7 +54,6 @@ public class Patient {
     public String getContact() {
         return contact;
     }
-
     public void setContact(String contact) {
         this.contact = contact;
     }
@@ -64,7 +61,6 @@ public class Patient {
     public String getDisease() {
         return disease;
     }
-
     public void setDisease(String disease) {
         this.disease = disease;
     }

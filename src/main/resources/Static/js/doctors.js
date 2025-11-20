@@ -1,47 +1,127 @@
+// ================== CONFIG ==================
+const doctorApiUrl = "http://localhost:8090/api/doctors";
 
-document.addEventListener('DOMContentLoaded', function() {
-    // 1. Define the API endpoint for your Spring Boot DoctorController
-    // This assumes your DoctorController is mapped to '/api/doctors'
-    const API_URL = '/api/doctors';
-    const tableBody = document.querySelector('#doctors-table tbody');
 
-    function fetchDoctors() {
-        fetch(API_URL)
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Failed to fetch doctors. Status: ' + response.status);
-                }
-                return response.json();
-            })
-            .then(doctors => {
-                // Clear the 'Loading' row
-                tableBody.innerHTML = '';
+// ================== LOAD DOCTORS ==================
+async function loadDoctors() {
+    try {
+        const res = await fetch(doctorApiUrl);
+        const doctors = await res.json();
 
-                if (doctors.length === 0) {
-                    tableBody.innerHTML = '<tr><td colspan="5">No doctor records found.</td></tr>';
-                    return;
-                }
+        const tbody = document.querySelector("#doctors-table tbody");
+        tbody.innerHTML = "";
 
-                // 2. Populate the table with the fetched data
-                doctors.forEach(doctor => {
-                    const row = tableBody.insertRow();
+        if (!doctors || doctors.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="5">No doctor records found.</td></tr>`;
+            return;
+        }
 
-                    // IMPORTANT: These property names (id, name, specialization, contact)
-                    // MUST MATCH the field names in your Doctor Model (Java).
-                    row.insertCell().textContent = doctor.id;
-                    row.insertCell().textContent = doctor.name;
-                    row.insertCell().textContent = doctor.specialization || 'General Practice'; // Assuming a 'specialization' field
-                    row.insertCell().textContent = doctor.contactNumber || 'N/A';
+        doctors.forEach(doc => {
+            tbody.innerHTML += `
+                <tr>
+                    <td>${doc.id}</td>
+                    <td>${doc.name}</td>
+                    <td>${doc.specialization}</td>
+                    <td>${doc.contact}</td>
+                    <td>
+                        <button onclick="deleteDoctor(${doc.id})">Delete</button>
+                    </td>
+                </tr>
+            `;
+        });
 
-                    const actionCell = row.insertCell();
-                    actionCell.innerHTML = '<button class="edit-btn">Edit</button> <button class="delete-btn">Delete</button>';
-                });
-            })
-            .catch(error => {
-                console.error('Error fetching doctors:', error);
-                tableBody.innerHTML = '<tr><td colspan="5" class="error-message">Error: Could not connect to the doctor API.</td></tr>';
-            });
+    } catch (error) {
+        console.log("Error loading doctors:", error);
+        document.querySelector("#doctors-table tbody").innerHTML =
+            `<tr><td colspan="5">Error connecting to Backend.</td></tr>`;
+    }
+}
+
+
+
+// ================== SHOW/HIDE DOCTOR MODAL ==================
+const doctorModal = document.getElementById("doctorFormModal");
+
+document.getElementById("addDoctorBtn").addEventListener("click", () => {
+    doctorModal.style.display = "block";
+});
+
+document.getElementById("closeDoctorFormBtn").addEventListener("click", () => {
+    doctorModal.style.display = "none";
+});
+
+
+// ================== SAVE DOCTOR WITH VALIDATION ==================
+document.getElementById("doctorForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const name = document.getElementById("doctorName").value.trim();
+    const specialization = document.getElementById("specialization").value.trim();
+    const contact = document.getElementById("doctorContact").value.trim();
+
+    // --- VALIDATION ---
+
+    // Name: letters only
+    const nameRegex = /^[A-Za-z ]+$/;
+    if (!nameRegex.test(name)) {
+        alert("Doctor name must contain letters only.");
+        return;
     }
 
-    fetchDoctors();
+    // Specialization: letters only
+    const specRegex = /^[A-Za-z ]+$/;
+    if (!specRegex.test(specialization)) {
+        alert("Specialization must contain letters only.");
+        return;
+    }
+
+    // Contact: digits only
+    const contactRegex = /^[0-9]+$/;
+    if (!contactRegex.test(contact)) {
+        alert("Contact must contain digits only.");
+        return;
+    }
+
+    if (contact.length < 10) {
+        alert("Contact must be at least 10 digits.");
+        return;
+    }
+
+    const newDoctor = { name, specialization, contact };
+
+    try {
+        const response = await fetch(doctorApiUrl, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(newDoctor)
+        });
+
+        if (response.ok) {
+            alert("Doctor added successfully!");
+            doctorModal.style.display = "none";
+            document.getElementById("doctorForm").reset();
+            loadDoctors();
+        } else {
+            alert("Failed to add doctor!");
+        }
+
+    } catch (error) {
+        console.log("Error:", error);
+        alert("Error connecting to backend!");
+    }
 });
+
+
+
+// ================== DELETE DOCTOR ==================
+async function deleteDoctor(id) {
+    if (confirm("Are you sure you want to delete this doctor?")) {
+        await fetch(`${doctorApiUrl}/${id}`, { method: "DELETE" });
+        loadDoctors();
+    }
+}
+
+
+
+// Load Doctors on page load
+window.onload = loadDoctors;

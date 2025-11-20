@@ -6,11 +6,25 @@ import lombok.Data;
 @Data
 @Entity
 public class Doctor {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     private String name;
     private String specialization;
+    private String contact;  // ✅ ADD THIS FIELD
+
+    public Doctor() {}
+
+    public Doctor(Long id, String name, String specialization, String contact) {
+        this.id = id;
+        this.name = name;
+        this.specialization = specialization;
+        this.contact = contact;
+    }
+
+    // Getters & Setters (Lombok @Data already creates them)
 
     public Long getId() {
         return id;
@@ -36,8 +50,11 @@ public class Doctor {
         this.specialization = specialization;
     }
 
-    public Doctor(){
-
+    public String getContact() {
+        return contact;
     }
 
+    public void setContact(String contact) {
+        this.contact = contact;
+    }
 }
