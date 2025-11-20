@@ -3,6 +3,9 @@ package com.example.hospitalmanagement.model;
 
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+
 import java.time.LocalDate;
 
 
@@ -14,6 +17,7 @@ public class Appointment {
 
     @ManyToOne
     @JoinColumn(name = "patient_id")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Patient patient;
 
     @ManyToOne

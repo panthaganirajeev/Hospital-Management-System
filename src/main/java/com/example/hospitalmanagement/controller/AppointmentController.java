@@ -68,5 +68,31 @@ public class AppointmentController {
     public long getAppointmentCount() {
         return appointmentRepository.count();
     }
+    @PutMapping("/{id}")
+    public Appointment updateAppointment(
+            @PathVariable Long id,
+            @RequestParam Long patientId,
+            @RequestParam Long doctorId,
+            @RequestParam @DateTimeFormat(pattern = "MM/dd/yyyy") LocalDate appointmentDate,
+            @RequestParam String reason) {
+
+        var patient = patientRepository.findById(patientId).orElse(null);
+        var doctor = doctorRepository.findById(doctorId).orElse(null);
+
+        if (patient == null || doctor == null) {
+            throw new RuntimeException("Invalid patient or doctor ID");
+        }
+
+        Appointment appointment = appointmentRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Appointment not found"));
+
+        appointment.setPatient(patient);
+        appointment.setDoctor(doctor);
+        appointment.setAppointmentDate(appointmentDate);
+        appointment.setReason(reason);
+
+        return appointmentRepository.save(appointment);
+    }
+
 
 }
